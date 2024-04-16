@@ -22,6 +22,29 @@ if (!$db) {
 $username = $_POST['username'];
 $password = $_POST['password'];
 
+$errors = [];
+if (!preg_match('/^(?=.*[a-z])/', $password)) {
+    $errors[] = 'lowercase letter';
+}
+if (!preg_match('/^(?=.*[A-Z])/', $password)) {
+    $errors[] = 'uppercase letter';
+}
+if (!preg_match('/^(?=.*\d)/', $password)) {
+    $errors[] = 'digit';
+}
+if (!preg_match('/^(?=.{8,})/', $password)) {
+    $errors[] = '8 characters';
+}
+
+if ($errors) {
+    $_SESSION['authed'] = false;
+    unset($_SESSION['name']);
+    $_SESSION['message'] = 'Password must contain ' . implode(', ', $errors);
+    header('Location: /login.php?username=' . $username);
+    die();
+}
+
+
 $query = $db->prepare("SELECT * FROM users WHERE username = ? AND password = ?");
 $query->bind_param('ss', $username, $password);
 $query->execute();
@@ -37,5 +60,5 @@ if ($result->num_rows > 0) {
     $_SESSION['message'] = 'Login failed';
 }
 
-header('Location: /login.php');
+header('Location: /login.php?username=' . $username);
 die();

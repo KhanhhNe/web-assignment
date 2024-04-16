@@ -27,7 +27,7 @@ session_start();
     <div class="row">
       <div class="col-md-6">
         <h2 class="mb-3">Login</h2>
-        <form action="/login-processing.php" method="post" class="mb-3">
+        <form action="/login-processing.php" method="post" class="mb-3 d-flex flex-column" style="gap: 1rem;">
           <div class="mb-3">
             <label for="username" class="form-label">Username</label>
             <input type="email" class="form-control" id="username" name="username">
@@ -37,6 +37,7 @@ session_start();
             <input type="password" class="form-control" id="password" name="password">
           </div>
           <button type="submit" class="btn btn-primary">Login</button>
+          <button onclick="disablePasswordValidation()" class="btn btn-secondary">Login without validation</button>
         </form>
       </div>
     </div>
@@ -50,7 +51,23 @@ session_start();
   <?php } ?>
 
   <script>
+    let passwordValidationEnabled = true;
+
+    function disablePasswordValidation() {
+      passwordValidationEnabled = false;
+      validatePassword({
+        target: $('#password')[0]
+      });
+    }
+
     function validatePassword(e) {
+      console.log(passwordValidationEnabled, e.target);
+      if (!passwordValidationEnabled) {
+        e.target.setCustomValidity('');
+        e.target.reportValidity();
+        return;
+      }
+
       const password = e.target.value;
       const errors = [
         [/^(?=.*[a-z])/, 'lowercase letter'],
@@ -66,7 +83,11 @@ session_start();
       e.target.reportValidity();
     }
     $('#password').on('input', validatePassword);
-    $('#password').on('focus', validatePassword);
+    $(document).ready(() => {
+      if (window.location.search.includes('username')) {
+        $('#username').val(window.location.search.split('=')[1]);
+      }
+    });
   </script>
 </body>
 
