@@ -1,0 +1,30 @@
+[
+  {
+    "mapUrl": "https://maps.app.goo.gl/a1GVLqqq23vXkaH1A",
+    "iframe": "<iframe src=\"https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d43877.35339940132!2d106.6683419784396!3d10.82810277525607!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMTDCsDQ5JzIzLjQiTiAxMDbCsDQwJzAwLjEiRQ!5e0!3m2!1sen!2s!4v1713454379219!5m2!1sen!2s\" width=\"600\" height=\"450\" style=\"border:0;\" allowfullscreen=\"\" loading=\"lazy\" referrerpolicy=\"no-referrer-when-downgrade\"></iframe>",
+    "country": "Vietnam",
+    "city": "Ho Chi Minh City",
+    "state": "Ho Chi Minh City"
+  },
+  {
+    "mapUrl": "https://maps.app.goo.gl/S31AHaFvsA5K5RCz9",
+    "iframe": "<iframe src=\"https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d24473.42869792073!2d109.17566842425283!3d12.24078611783191!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMTDCsDQ5JzIzLjQiTiAxMDbCsDQwJzAwLjEiRQ!5e0!3m2!1sen!2s!4v1713454673472!5m2!1sen!2s\" width=\"600\" height=\"450\" style=\"border:0;\" allowfullscreen=\"\" loading=\"lazy\" referrerpolicy=\"no-referrer-when-downgrade\"></iframe>",
+    "country": "Vietnam",
+    "city": "Nha Trang",
+    "state": "Khanh Hoa"
+  },
+  {
+    "mapUrl": "https://maps.app.goo.gl/8fnSgNtdAktd1hqL9",
+    "iframe": "<iframe src=\"https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15500.686879431407!2d109.21223319812447!3d13.768515885999257!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x316f6c921e7c89f1%3A0x9fe3703530f792f5!2zTMO9IFRoxrDhu51uZyBLaeG7h3QsIFRow6BuaCBwaOG7kSBRdWkgTmjGoW4sIELDrG5oIMSQ4buLbmgsIFZpZXRuYW0!5e0!3m2!1sen!2s!4v1713454792009!5m2!1sen!2s\" width=\"600\" height=\"450\" style=\"border:0;\" allowfullscreen=\"\" loading=\"lazy\" referrerpolicy=\"no-referrer-when-downgrade\"></iframe>",
+    "country": "Vietnam",
+    "city": "Quy Nhon",
+    "state": "Binh Dinh"
+  },
+  {
+    "mapUrl": "https://maps.app.goo.gl/7Pf83xC1eogfy813A",
+    "iframe": "<iframe src=\"https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d45892.27226698714!2d107.53921900964957!3d16.451734120628103!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3141a1813b4736fb%3A0x4168e840f61bf1f3!2sHue%20Imperial%20City!5e0!3m2!1sen!2s!4v1713455024725!5m2!1sen!2s\" width=\"600\" height=\"450\" style=\"border:0;\" allowfullscreen=\"\" loading=\"lazy\" referrerpolicy=\"no-referrer-when-downgrade\"></iframe>",
+    "country": "Vietnam",
+    "city": "Hue",
+    "state": "Thua Thien Hue"
+  }
+]
