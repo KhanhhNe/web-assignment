@@ -9,11 +9,11 @@
             <li class="nav-item active">
                 <a class="nav-link" href="/">Home</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/products.php">Products</a>
-            </li>
 
-            <?php if (isset($_SESSION['username'])) : ?>
+            <?php if (isset($_SESSION['user_id'])) : ?>
+                <li class="nav-item">
+                    <a class="nav-link" href="/dashboard.php">Dashboard</a>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/logout.php">Logout</a>
                 </li>
