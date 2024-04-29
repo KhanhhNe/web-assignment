@@ -144,7 +144,7 @@ $course = fetch_assoc_all($result);
             course_id: <?= $course_id ?>,
             quiz_name: quiz_name
         }, function(data) {
-            const result = JSON.parse(data);
+            const result = data;
             console.log(result);
             if (result.success) {
                 $('#quiz-list').load(
@@ -165,7 +165,7 @@ $course = fetch_assoc_all($result);
             quiz_id: quiz_id,
             quiz_name: quiz_name
         }, function(data) {
-            const result = JSON.parse(data);
+            const result = data;
             console.log(result);
             if (result.success) {
                 $('#quiz-list').load(
@@ -186,7 +186,7 @@ $course = fetch_assoc_all($result);
                 action: 'delete',
                 quiz_id: quiz_id
             }, function(data) {
-                const result = JSON.parse(data);
+                const result = data;
                 if (result.success) {
                     $('#quiz-list').load(`course.php?course_id=${<?= $course_id ?>} #quiz-list-content`);
                 } else {

@@ -1,0 +1,22 @@
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+:root {
+  --bk-dark: #00173d;
+}
+
+.bg-bk-dark {
+  background-color: var(--bk-dark);
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+body.debug * {
+  outline: 1px solid red;
+}

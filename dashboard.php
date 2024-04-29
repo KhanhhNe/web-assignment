@@ -66,7 +66,7 @@ require_once 'header.php';
             action: 'create',
             course_name: course_name
         }, function(data) {
-            const result = JSON.parse(data);
+            const result = data;
             console.log(result);
             if (result.success) {
                 $('#course-list').load(
@@ -87,7 +87,7 @@ require_once 'header.php';
             course_id: course_id,
             course_name: course_name
         }, function(data) {
-            const result = JSON.parse(data);
+            const result = data;
             console.log(result);
             if (result.success) {
                 $('#course-list').load(
@@ -108,7 +108,7 @@ require_once 'header.php';
                 action: 'delete',
                 course_id: course_id
             }, function(data) {
-                const result = JSON.parse(data);
+                const result = data;
                 if (result.success) {
                     $('#course-list').load('dashboard.php #course-list-content');
                 } else {
