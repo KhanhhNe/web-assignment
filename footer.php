@@ -1,7 +1,61 @@
+<div id="input-modal" class="modal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form class="modal-body">
+                <label for="input-name">Name</label>
+                <input type="text" class="form-control" id="input-name" placeholder="Name">
+            </form>
+            <div class="modal-footer">
+                <button onclick="modalDismiss()" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button onclick="modalSubmit()" type="button" class="btn btn-primary">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div id="toast-container" class="toast-container position-absolute bottom-0 end-0 m-3">
 </div>
 
 <script>
+    const modal = new bootstrap.Modal('#input-modal');
+    let modalResolve;
+
+    function modalDismiss() {
+        modal.hide();
+        modalResolve?.({
+            success: false
+        });
+    }
+
+    function modalSubmit() {
+        $('#input-modal').modal('hide');
+
+        const values = $('#input-modal .modal-body').serializeArray();
+
+        modalResolve?.({
+            success: true,
+            values: Object.fromEntries(values.map(field => [field.name, field.value]))
+        });
+    }
+
+    function promptModal(fields = {}) {
+        $('#input-modal .modal-body').empty();
+        for (const [key, {
+                title,
+                defaultValue = ''
+            }] of Object.entries(fields)) {
+            $('#input-modal .modal-body').append(`
+                <label for="input-${key}">${title}</label>
+                <input type="text" class="form-control" id="input-${key}" name="${key}" placeholder="${title}" value="${defaultValue}">
+            `);
+        }
+
+        return new Promise((resolve) => {
+            modal.show();
+            modalResolve = resolve;
+        });
+    }
+
     function showToast(content, options = {}) {
         const type = options.type ?? 'info';
 

@@ -16,90 +16,152 @@ if (!$result || $result->num_rows == 0) {
 
 $courses = fetch_assoc_all($result);
 
+if (isset($_GET['api'])) {
+    die_json(['success' => true, 'courses' => $courses]);
+}
+
 require_once 'header.php';
 ?>
 
 <div class="container my-5">
-    <h1 class="h1 mb-5">Dashboard</h1>
+    <?php if ($user_id) : ?>
+        <div class="d-flex justify-content-end mb-3">
+            <button class="btn btn-primary" type="button" onclick="createCourse()">Create</button>
+        </div>
+    <?php endif ?>
 
-    <div class="row">
-        <div id="course-list" class="col-3">
-            <div id="course-list-content">
-                <div class=" card mb-3">
-                    <div class="card-body">
-                        <input type="text" class="form-control mb-2" id="course-name" placeholder="Course Name">
-                        <button class="btn btn-primary" type="button" onclick="createCourse()">Create Course</button>
+    <div id="course-container" class="tw-grid tw-grid-cols-3 xl:tw-grid-cols-4 gap-4">
+        <?php foreach ($courses as $course) : ?>
+            <div id="course-<?= $course['id'] ?>" class="card w-100">
+                <div class="card-img-top overflow-hidden w-100 tw-aspect-video">
+                    <?= updatableImage(
+                        $course['course_img'] ? $course['course_img'] : 'https://via.assets.so/img.jpg?w=320&h=180&tc=%23f8f9fa&bg=%23343a40&t=No%20Image',
+                        "updateCourseImage({$course['id']})",
+                        $course['creator_teacher_id'] == $user_id
+                    ) ?>
+                </div>
+                <div class="card-body d-flex flex-column justify-content-between">
+                    <a href="course.php?id=<?= $course['id'] ?>" class="card-title h4">
+                        <?= $course['course_name'] ?>
+                    </a>
+                    <div class="card-text hstack justify-content-between">
+                        <span class="text-muted fst-italic">
+                            by <?= $course['creator_teacher_id'] == $user_id ? 'you' : $course['teacher_name'] ?>
+                        </span>
+                        <?php if ($course['creator_teacher_id'] == $user_id) : ?>
+                            <div class="hstack gap-1">
+                                <button class="btn btn-outline-primary btn-sm tw-aspect-square" type="button" onclick="updateCourse(<?= $course['id'] ?>)">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-outline-danger btn-sm tw-aspect-square" type="button" onclick="deleteCourse(<?= $course['id'] ?>)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        <?php endif ?>
                     </div>
                 </div>
-                <?php foreach ($courses as $course) : ?>
-                    <div id="course-<?= $course['id'] ?>" class="card mb-3">
-                        <div class="card-body">
-                            <h4 class="course-name h4" contenteditable><?= $course['course_name'] ?></h4>
-                            <p class="card-text">
-                                Created by <?= $course['teacher_name'] ?><?= $course['creator_teacher_id'] == $user_id ? ' (you)' : '' ?>
-                            </p>
-                            <div>
-                                <button class="btn btn-primary" type="button" onclick="viewCourse(<?= $course['id'] ?>)">View</button>
-                                <?php if ($course['creator_teacher_id'] == $user_id) : ?>
-                                    <button class="btn btn-success" type="button" onclick="updateCourse(<?= $course['id'] ?>)">Update</button>
-                                    <button class="btn btn-danger" type="button" onclick="deleteCourse(<?= $course['id'] ?>)">Delete</button>
-                                <?php endif ?>
-                            </div>
-                        </div>
-                    </div>
-                <?php endforeach ?>
             </div>
-        </div>
-        <div id="course-container" class="col-9"></div>
+        <?php endforeach ?>
     </div>
 </div>
 
 <script>
-    function viewCourse(course_id) {
-        $('#course-container').load(`course.php?course_id=${course_id}`);
+    let courses;
+
+    function getCourse(id) {
+        return courses?.find(course => course.id == id);
     }
 
-    function createCourse() {
-        const course_name = $('#course-name').val();
-
-        $.post('course.php', {
-            action: 'create',
-            course_name: course_name
-        }, function(data) {
-            const result = data;
-            console.log(result);
-            if (result.success) {
-                $('#course-list').load(
-                    'dashboard.php #course-list-content', undefined,
-                    () => showRedDot($(`#course-${result.course_id}`))
-                );
-            } else {
-                alert(result.error);
-            }
+    function reloadCourses() {
+        $.get('dashboard.php?api=1', function(data) {
+            courses = data.courses;
         });
     }
+    reloadCourses();
 
-    function updateCourse(course_id) {
-        const course_name = $(`#course-${course_id} .course-name`).text();
-
-        $.post('course.php', {
-            action: 'update',
-            course_id: course_id,
-            course_name: course_name
-        }, function(data) {
-            const result = data;
-            console.log(result);
-            if (result.success) {
-                $('#course-list').load(
-                    'dashboard.php #course-list-content', undefined,
-                    () => {
-                        $(`#course-${course_id}`).find('h4').text(course_name);
-                        showRedDot($(`#course-${course_id}`));
+    async function updateCourseImage(course_id) {
+        const input = await promptModal({
+            course_img: {
+                title: 'New course cover image',
+                defaultValue: getCourse(course_id)?.course_img
+            },
+        });
+        if (input.success) {
+            $.post('course.php', {
+                action: 'update',
+                course_id,
+                ...input.values,
+            }, function(data) {
+                if (data.success) {
+                    showToast('Course image updated!', {
+                        type: 'success'
                     });
-            } else {
-                alert(result.error);
+                    $('#course-container').load('dashboard.php #course-container > *');
+                    reloadCourses();
+                }
+            });
+        }
+    }
+
+    async function createCourse() {
+        const input = await promptModal({
+            course_name: {
+                title: 'Course name'
+            },
+            course_img: {
+                title: 'Course cover image'
             }
         });
+        if (input.success) {
+            $.post('course.php', {
+                action: 'create',
+                ...input.values,
+            }, function(data) {
+                if (data.success) {
+                    $('#course-container').load(
+                        'dashboard.php #course-container > *', undefined,
+                        () => showRedDot($(`#course-${data.course_id}`))
+                    );
+                    showToast('Course created!', {
+                        type: 'success'
+                    });
+                    reloadCourses();
+                }
+            });
+        }
+    }
+
+    async function updateCourse(course_id) {
+        const course = getCourse(course_id);
+
+        const input = await promptModal({
+            course_name: {
+                title: 'Course name',
+                defaultValue: course?.course_name
+            },
+            course_img: {
+                title: 'Course cover image',
+                defaultValue: course?.course_img
+            }
+        });
+        if (input.success) {
+            $.post('course.php', {
+                action: 'update',
+                course_id,
+                ...input.values,
+            }, function(data) {
+                if (data.success) {
+                    $('#course-container').load(
+                        'dashboard.php #course-container > *', undefined,
+                        () => showRedDot($(`#course-${course_id}`))
+                    );
+                    showToast('Course updated!', {
+                        type: 'success'
+                    });
+                    reloadCourses();
+                }
+            });
+        }
     }
 
     function deleteCourse(course_id) {
@@ -108,11 +170,9 @@ require_once 'header.php';
                 action: 'delete',
                 course_id: course_id
             }, function(data) {
-                const result = data;
-                if (result.success) {
-                    $('#course-list').load('dashboard.php #course-list-content');
-                } else {
-                    alert(result.error);
+                if (data.success) {
+                    $('#course-container').load('dashboard.php #course-container > *');
+                    reloadCourses();
                 }
             });
         }
@@ -120,4 +180,5 @@ require_once 'header.php';
 </script>
 
 <?php
+
 require_once 'footer.php';

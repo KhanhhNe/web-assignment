@@ -17,15 +17,15 @@ require_once 'header.php';
     }
 </style>
 
-<div class="flex-center flex-column pb-5" style="width: 30%; height: 100vh;">
+<div class="flex-center flex-column gap-3 pb-5" style="width: 40%; height: 100vh;">
     <img src="/assets/logo.png" alt="Logo" width="100" height="100">
-    <h5 class="h5 mb-3 text-center">Ho Chi Minh<br>University of Technology</h5>
-    <h1 class="h1 mb-5">Quiz Website</h1>
+    <h5 class="h5 text-center">Ho Chi Minh<br>University of Technology</h5>
+    <h1 class="h1">Quiz Website</h1>
 
     <?php if (isset($_SESSION['user_id'])) : ?>
-        <a href="/dashboard.php" class="btn btn-primary btn-lg">Dashboard</a>
+        <a href="/dashboard.php" class="btn btn-primary">Dashboard</a>
     <?php else : ?>
-        <a href="/login.php" class="btn btn-primary btn-lg">Login</a>
+        <a href="/login.php" class="btn btn-primary">Login</a>
     <?php endif; ?>
 </div>
 

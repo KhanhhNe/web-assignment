@@ -43,3 +43,33 @@ function required_keys($keys)
     }
     return $values;
 }
+
+function required_at_least_one_key($keys)
+{
+    $values = [];
+    foreach ($keys as $key) {
+        $values[] = $_REQUEST[$key] ?? NULL;
+    }
+    // Error if all are null
+    if (count(array_filter($values, 'strlen')) == 0) {
+        $all_keys = implode(', ', $keys);
+        die_json(['success' => false, 'error' => "Require at least one of `$all_keys`"]);
+    }
+    return $values;
+}
+
+function updatableImage($imageUrl, $onclick = '', $updatable = true)
+{
+    ob_start();
+?>
+    <div class="tw-group tw-relative w-100 h-100">
+        <img src="<?= $imageUrl ?>" class="w-100 h-100 tw-absolute tw-object-contain <?= $updatable ? 'tw-transition-all tw-duration-200 tw-ease-in-out group-hover:tw-brightness-50' : '' ?>">
+        <?php if ($updatable) : ?>
+            <div class="flex-center w-100 h-100 tw-absolute tw-top-0 tw-left-0 tw-opacity-0 tw-z-10 group-hover:tw-opacity-100">
+                <button onclick="<?= $onclick ?>" class="btn btn-outline-light">Update</button>
+            </div>
+        <?php endif; ?>
+    </div>
+<?php
+    return ob_get_clean();
+}

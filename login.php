@@ -37,25 +37,25 @@ require_once 'header.php';
     }
 </style>
 
-<div class="flex-center flex-column" style="width: 30%; height: 100vh;">
+<div class="flex-center flex-column pb-5" style="width: 40%; height: 100vh;">
     <form id="login-form" onsubmit="return submitLoginForm()">
-        <div class="vstack flex-grow-0 align-self-auto gap-3 align-items-center p-5 rounded-4 bg-white">
-            <div class="vstack gap-1 align-items-center">
-                <img src="/assets/logo.png" alt="Logo" width="50" height="50">
-                <h3 class="h3">Sign in</h3>
+        <div class="vstack flex-grow-0 align-self-auto gap-3 align-items-center p-5" style="width: 20rem;">
+            <div class="vstack gap-3 align-items-center w-100">
+                <img src="/assets/logo.png" alt="Logo" width="65" height="65">
+                <h2 class="h2">Sign in</h2>
             </div>
 
-            <div class="form-group">
+            <div class="form-group w-100">
                 <label for="email">Email</label>
                 <input type="text" class="form-control w-100" id="email" name="email" required>
             </div>
 
-            <div class="form-group">
+            <div class="form-group w-100">
                 <label for="password">Password</label>
                 <input type="password" class="form-control w-100" id="password" name="password" required>
             </div>
 
-            <button type="submit" class="btn btn-primary w-100">Submit</button>
+            <button type="submit" class="btn btn-primary w-100 mt-3">Submit</button>
         </div>
     </form>
 </div>

@@ -6,82 +6,48 @@ $user_id = $_SESSION['user_id'] ?? 0;
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($_POST['action'] == 'create') {
-        if ($user_id == 0) {
-            echo json_encode(['success' => false, 'error' => 'Please log in']);
-            die();
-        }
+        require_login();
+        [$course_name, $course_img] = required_keys(['course_name', 'course_img']);
 
-        $course_name = $_POST['course_name'];
-        if ($course_name == '') {
-            echo json_encode(['success' => false, 'error' => 'Please enter a course name']);
-            die();
-        }
+        $db->query(
+            "INSERT INTO courses (creator_teacher_id, course_name, course_img) VALUES ($user_id, '$course_name', '$course_img')"
+        ) || die_json(['success' => false, 'error' => 'Could not create course']);
 
-        $result = $db->query(
-            "INSERT INTO courses (creator_teacher_id, course_name) VALUES ($user_id, '$course_name')"
-        );
-        if (!$result) {
-            echo json_encode(['success' => false, 'error' => 'Could not create course']);
-            die();
-        }
-        echo json_encode(['success' => true, 'course_id' => $db->insert_id]);
-        die();
+        die_json(['success' => true, 'course_id' => $db->insert_id]);
     }
 
     if ($_POST['action'] == 'update') {
-        if ($user_id == 0) {
-            echo json_encode(['success' => false, 'error' => 'Please log in']);
-            die();
+        require_login();
+        [$course_id] = required_keys(['course_id']);
+        [$course_name, $course_img] = required_at_least_one_key(['course_name', 'course_img']);
+
+        if ($course_name) {
+            $db->query(
+                "UPDATE courses SET course_name = '$course_name' WHERE id = $course_id AND creator_teacher_id = $user_id"
+            ) || die_json(['success' => false, 'error' => 'Could not update course']);
         }
 
-        $course_id = $_POST['course_id'];
-        if ($course_id == '') {
-            echo json_encode(['success' => false, 'error' => 'Please enter a course id']);
-            die();
+        if ($course_img) {
+            $db->query(
+                "UPDATE courses SET course_img = '$course_img' WHERE id = $course_id AND creator_teacher_id = $user_id"
+            ) || die_json(['success' => false, 'error' => 'Could not update course']);
         }
 
-        $course_name = $_POST['course_name'];
-        if ($course_name == '') {
-            echo json_encode(['success' => false, 'error' => 'Please enter a course name']);
-            die();
-        }
-
-        $result = $db->query(
-            "UPDATE courses SET course_name = '$course_name' WHERE id = $course_id AND creator_teacher_id = $user_id"
-        );
-        if (!$result) {
-            echo json_encode(['success' => false, 'error' => 'Could not update course']);
-            die();
-        }
-        echo json_encode(['success' => true]);
-        die();
+        die_json(['success' => true]);
     }
 
     if ($_POST['action'] == 'delete') {
-        if ($user_id == 0) {
-            echo json_encode(['success' => false, 'error' => 'Please log in']);
-            die();
-        }
+        require_login();
+        [$course_id] = required_keys(['course_id']);
 
-        $course_id = $_POST['course_id'];
-        if ($course_id == '') {
-            echo json_encode(['success' => false, 'error' => 'Please enter a course id']);
-            die();
-        }
-
-        $result = $db->query(
+        $db->query(
             "DELETE FROM courses WHERE id = $course_id AND creator_teacher_id = $user_id"
-        );
-        if (!$result) {
-            echo json_encode(['success' => false, 'error' => 'Could not delete course']);
-            die();
-        }
-        echo json_encode(['success' => true]);
-        die();
+        ) || die_json(['success' => false, 'error' => 'Could not delete course']);
+
+        die_json(['success' => true]);
     }
 
-    echo json_encode(['success' => false, 'error' => 'Invalid action']);
-    die();
+    die_json(['success' => false, 'error' => 'Unknown action']);
 }
 
 $course_id = $_GET['course_id'];

@@ -9,10 +9,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         require_login();
         [$course_id, $quiz_name] = required_keys(['course_id', 'quiz_name']);
 
-        $result = $db->query(
+        $db->query(
             "INSERT INTO quizes (teacher_id, course_id, name) VALUES ($user_id, $course_id, '$quiz_name')"
-        );
-        !$result && die_json(['success' => false, 'error' => 'Could not create quiz']);
+        ) || die_json(['success' => false, 'error' => 'Could not create quiz']);
 
         die_json(['success' => true, 'quiz_id' => $db->insert_id]);
     }
@@ -58,10 +57,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         require_login();
         [$quiz_id, $quiz_name] = required_keys(['quiz_id', 'quiz_name']);
 
-        $result = $db->query(
+        $db->query(
             "UPDATE quizes SET name = '$quiz_name' WHERE id = $quiz_id AND teacher_id = $user_id"
-        );
-        !$result && die_json(['success' => false, 'error' => 'Could not update quiz']);
+        ) || die_json(['success' => false, 'error' => 'Could not update quiz']);
 
         die_json(['success' => true]);
     }
@@ -70,10 +68,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         require_login();
         [$quiz_id] = required_keys(['quiz_id']);
 
-        $result = $db->query(
+        $db->query(
             "DELETE FROM quizes WHERE id = $quiz_id AND teacher_id = $user_id"
-        );
-        !$result && die_json(['success' => false, 'error' => 'Could not delete quiz']);
+        ) || die_json(['success' => false, 'error' => 'Could not delete quiz']);
 
         die_json(['success' => true]);
     }
@@ -88,10 +85,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 continue;
             }
 
-            $result = $db->query(
+            $db->query(
                 "UPDATE questions SET $key = '$value' WHERE quiz_id = $quiz_id AND id = $question_id"
-            );
-            !$result && die_json(['success' => false, 'error' => "Could not update question $key"]);
+            ) || die_json(['success' => false, 'error' => "Could not update question $key"]);
         }
 
         die_json(['success' => true]);
