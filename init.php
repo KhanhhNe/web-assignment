@@ -58,18 +58,4 @@ function required_at_least_one_key($keys)
     return $values;
 }
 
-function updatableImage($imageUrl, $onclick = '', $updatable = true)
-{
-    ob_start();
-?>
-    <div class="tw-group tw-relative w-100 h-100">
-        <img src="<?= $imageUrl ?>" class="w-100 h-100 tw-absolute tw-object-contain <?= $updatable ? 'tw-transition-all tw-duration-200 tw-ease-in-out group-hover:tw-brightness-50' : '' ?>">
-        <?php if ($updatable) : ?>
-            <div class="flex-center w-100 h-100 tw-absolute tw-top-0 tw-left-0 tw-opacity-0 tw-z-10 group-hover:tw-opacity-100">
-                <button onclick="<?= $onclick ?>" class="btn btn-outline-light">Update</button>
-            </div>
-        <?php endif; ?>
-    </div>
-<?php
-    return ob_get_clean();
-}
+$no_image_url = 'https://via.assets.so/img.jpg?w=320&h=180&tc=%23f8f9fa&bg=%23343a40&t=No%20Image';

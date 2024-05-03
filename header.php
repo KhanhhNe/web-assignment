@@ -34,6 +34,21 @@
         $.ajaxSetup({
             dataType: 'json',
         });
+
+        const noImageUrl = '<?= $no_image_url ?>';
+
+        function updatableImage(imageUrl, onclick = '', updatable = true) {
+            return `
+                <div class="tw-group tw-relative w-100 h-100">
+                    <img src="${imageUrl}" class="w-100 h-100 tw-absolute tw-object-contain ${updatable ? 'tw-transition-all tw-duration-200 tw-ease-in-out group-hover:tw-brightness-50' : ''}">
+                    ${updatable ? `
+                        <div class="flex-center w-100 h-100 tw-absolute tw-top-0 tw-left-0 tw-opacity-0 tw-z-10 group-hover:tw-opacity-100">
+                            <button onclick="${onclick}" class="btn btn-outline-light">Update</button>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
     </script>
 
     <link rel="stylesheet" href="/index.css">
@@ -48,4 +63,22 @@
         </div>
     <?php
         unset($_SESSION['message']);
-    } ?>
+    }
+
+    function updatableImage($imageUrl, $onclick = '', $updatable = true)
+    {
+        ob_start();
+    ?>
+        <div class="tw-group tw-relative w-100 h-100">
+            <img src="<?= $imageUrl ?>" class="w-100 h-100 tw-absolute tw-object-contain <?= $updatable ? 'tw-transition-all tw-duration-200 tw-ease-in-out group-hover:tw-brightness-50' : '' ?>">
+            <?php if ($updatable) : ?>
+                <div class="flex-center w-100 h-100 tw-absolute tw-top-0 tw-left-0 tw-opacity-0 tw-z-10 group-hover:tw-opacity-100">
+                    <button onclick="<?= $onclick ?>" class="btn btn-outline-light">Update</button>
+                </div>
+            <?php endif; ?>
+        </div>
+    <?php
+        return ob_get_clean();
+    }
+
+    ?>

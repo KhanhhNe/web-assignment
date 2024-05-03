@@ -13,12 +13,9 @@
                 <li class="nav-item">
                     <a class="nav-link" href="/">Home</a>
                 </li>
-
-                <?php if (isset($_SESSION['user_id'])) : ?>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/dashboard.php">Dashboard</a>
-                    </li>
-                <?php endif; ?>
+                <li class="nav-item">
+                    <a class="nav-link" href="/dashboard.php">Dashboard</a>
+                </li>
             </ul>
 
             <ul class="navbar-nav align-items-center">

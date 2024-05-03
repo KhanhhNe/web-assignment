@@ -13,7 +13,7 @@
     </div>
 </div>
 
-<div id="toast-container" class="toast-container position-absolute bottom-0 end-0 m-3">
+<div id="toast-container" class="toast-container position-fixed bottom-0 end-0 m-3">
 </div>
 
 <script>
@@ -69,7 +69,10 @@
             </div>
         `)
         const toast = $(`#${id}`);
-        new bootstrap.Toast(toast).show()
+        new bootstrap.Toast(toast).show({
+            delay: 5000,
+        })
+        toast.on('hidden.bs.toast', () => toast.remove())
     }
 
     function showRedDot(jqueryElem) {

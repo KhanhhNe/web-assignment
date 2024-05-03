@@ -35,15 +35,17 @@ require_once 'header.php';
             <div id="course-<?= $course['id'] ?>" class="card w-100">
                 <div class="card-img-top overflow-hidden w-100 tw-aspect-video">
                     <?= updatableImage(
-                        $course['course_img'] ? $course['course_img'] : 'https://via.assets.so/img.jpg?w=320&h=180&tc=%23f8f9fa&bg=%23343a40&t=No%20Image',
+                        $course['course_img'] ? $course['course_img'] : $no_image_url,
                         "updateCourseImage({$course['id']})",
                         $course['creator_teacher_id'] == $user_id
                     ) ?>
                 </div>
                 <div class="card-body d-flex flex-column justify-content-between">
-                    <a href="course.php?id=<?= $course['id'] ?>" class="card-title h4">
-                        <?= $course['course_name'] ?>
-                    </a>
+                    <div class="card-title">
+                        <a href="course.php?id=<?= $course['id'] ?>" class="fs-4 tw-underline">
+                            <?= $course['course_name'] ?>
+                        </a>
+                    </div>
                     <div class="card-text hstack justify-content-between">
                         <span class="text-muted fst-italic">
                             by <?= $course['creator_teacher_id'] == $user_id ? 'you' : $course['teacher_name'] ?>

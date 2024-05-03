@@ -20,3 +20,7 @@ body {
 body.debug * {
   outline: 1px solid red;
 }
+
+input.form-control:focus {
+  z-index: 999;
+}
