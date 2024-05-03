@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 
 $course_id = $_GET['id'];
-$quiz_id = $_GET['quiz_id'] ?? null;
+$quiz_id = $_GET['quiz_id'] ?? 0;
 
 $result = $db->query(
     "SELECT quizes.*, teachers.name AS teacher_name
@@ -97,32 +97,32 @@ require_once 'header.php';
 
 <div class="container my-5">
     <div class="row">
-        <div id="quiz-list" class="col-3">
-            <div id="quiz-list-content" class="vstack gap-2">
-                <?php foreach ($course as $index => $quiz) : ?>
-                    <div id="quiz-<?= $quiz['id'] ?>" class="quiz card mb-3 <?= $quiz_id == $quiz['id'] ? 'tw-ring' : '' ?>">
-                        <div class="card-body">
-                            <a href="<?= quiz_url($quiz['id']) ?>" class="fs-4 tw-underline d-block w-100 mb-3"><?= $index + 1 ?>. <?= $quiz['name'] ?></a>
-                            <div class="card-text hstack justify-content-between">
-                                <span class="text-muted fst-italic">by <?= $quiz['teacher_id'] == $user_id ? 'you' : $quiz['teacher_name'] ?></span>
-                                <?php if ($quiz['teacher_id'] == $user_id) : ?>
-                                    <div class="hstack gap-1">
-                                        <button class="btn btn-outline-primary btn-sm tw-aspect-square" type="button" onclick="updateQuiz(<?= $quiz['id'] ?>, '<?= $quiz['name'] ?>')">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-outline-danger btn-sm tw-aspect-square" type="button" onclick="deleteQuiz(<?= $quiz['id'] ?>)">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </div>
-                                <?php endif ?>
-                            </div>
+        <div id="quiz-list" class="col-3 vstack gap-2">
+            <?php foreach ($course as $index => $quiz) : ?>
+                <div id="quiz-<?= $quiz['id'] ?>" class="quiz card mb-3 <?= $quiz_id == $quiz['id'] ? 'tw-ring' : '' ?>">
+                    <div class="card-body">
+                        <a href="<?= quiz_url($quiz['id']) ?>" class="fs-4 tw-underline d-block w-100 mb-3"><?= $index + 1 ?>. <?= $quiz['name'] ?></a>
+                        <div class="card-text hstack justify-content-between">
+                            <span class="text-muted fst-italic">by <?= $quiz['teacher_id'] == $user_id ? 'you' : $quiz['teacher_name'] ?></span>
+                            <?php if ($quiz['teacher_id'] == $user_id) : ?>
+                                <div class="hstack gap-1">
+                                    <button class="btn btn-outline-primary btn-sm tw-aspect-square" type="button" onclick="updateQuiz(<?= $quiz['id'] ?>, '<?= $quiz['name'] ?>')">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button class="btn btn-outline-danger btn-sm tw-aspect-square" type="button" onclick="deleteQuiz(<?= $quiz['id'] ?>)">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            <?php endif ?>
                         </div>
                     </div>
-                <?php endforeach ?>
+                </div>
+            <?php endforeach ?>
+            <?php if ($user_id) : ?>
                 <button type="button" class="btn btn-primary" onclick="addQuiz()">
                     <i class="bi bi-plus fs-3"></i>
                 </button>
-            </div>
+            <?php endif ?>
         </div>
         <div id="quiz-container" class="col-9">
             <?php if ($quiz_id) : ?>
@@ -133,6 +133,8 @@ require_once 'header.php';
 
                     <?php if ($quiz['teacher_id'] == $user_id) : ?>
                         <button type="button" class="btn btn-primary tw-ml-auto" onclick="updateQuestions()">Update</button>
+                    <?php elseif (!$user_id) : ?>
+                        <button id="submit-button" type="button" class="btn btn-primary tw-ml-auto" onclick="submitQuiz()">Submit</button>
                     <?php endif ?>
                 </form>
             <?php endif ?>
@@ -161,6 +163,7 @@ require_once 'header.php';
     reloadQuizData();
 
     function showQuestion(question = {}, index) {
+        const isTeacher = !!userId;
         const editable = question.teacher_id == userId;
         const disabled = question.teacher_id != userId ? 'disabled' : '';
 
@@ -178,23 +181,46 @@ require_once 'header.php';
                             </button>
                         ` : ''}
                     </div>
-                    <div class="card-title">
-                        <input type="text" class="form-control" name="question-${question.id}-content" value="${question.question}" placeholder="Question" ${disabled}>
-                    </div>
-                    <div class="card-text">
-                        <div class="question-image w-100 tw-h-[10rem]">
-                            <input type="hidden" name="question-${question.id}-image_url" value="${question.image_url}">
-                            ${updatableImage(question.image_url || noImageUrl, `updateQuestionImage(${question.id})`, editable)}
+                    ${isTeacher ? `
+                        <div class="card-title">
+                            <input type="text" class="form-control" name="question-${question.id}-content" value="${question.question}" placeholder="Question" ${disabled}>
                         </div>
-                    </div>
-                    <div class="card-text">
-                        ${JSON.parse(question.answers).map((answer, index) => `
-                            <div class="form-check hstack align-items-center gap-2">
-                                <input class="form-check-input" type="radio" name="question-${question.id}-correct_answer" value="${index}" ${index == question.correct_answer ? 'checked' : ''} ${disabled}>
-                                <input type="text" class="form-control" name="question-${question.id}-answer-${index}" value="${answer}" placeholder="Answer ${index + 1}" ${disabled}>
+                        <div class="card-text">
+                            <div class="question-image w-100 tw-h-[10rem]">
+                                <input type="hidden" name="question-${question.id}-image_url" value="${question.image_url}">
+                                ${updatableImage(question.image_url || noImageUrl, `updateQuestionImage(${question.id})`, editable)}
                             </div>
-                        `).join('')}
-                    </div>
+                        </div>
+                        <div class="card-text">
+                            ${JSON.parse(question.answers).map((answer, index) => `
+                                <div class="form-check hstack gap-2">
+                                    <input class="form-check-input tw-my-auto" type="radio" name="question-${question.id}-correct_answer" value="${index}" ${index == question.correct_answer ? 'checked' : ''} ${disabled}>
+                                    <input type="text" class="form-control" name="question-${question.id}-answer-${index}" value="${answer}" placeholder="Answer ${index + 1}" ${disabled}>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : `
+                        <div class="card-title">
+                            ${question.question}
+                        </div>
+                        ${question.image_url ? `
+                            <div class="card-text">
+                                <div class="question-image w-100 tw-h-[10rem]">
+                                    ${updatableImage(question.image_url || noImageUrl, '', editable)}
+                                </div>
+                            </div>
+                        ` : ''}
+                        <div class="card-text"> 
+                            ${JSON.parse(question.answers).map((answer, index) => `
+                                <div class="form-check hstack gap-2">
+                                    <input class="form-check-input tw-my-auto" type="radio" name="question-${question.id}-answer" id="question-${question.id}-answer-${index}" value="${index}">
+                                    <label class="form-check-label" for="question-${question.id}-answer-${index}">
+                                        ${answer}
+                                    </label>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `}
                 </div>
             </div>
         `);
@@ -206,11 +232,14 @@ require_once 'header.php';
         for (const question of data.questions) {
             showQuestion(question, index++);
         }
-        $('#quiz-form .quiz-content').append(`
-            <button type="button" class="btn btn-primary" onclick="addQuestion()">
-                <i class="bi bi-plus fs-3"></i>
-            </button>
-        `);
+
+        if (userId) {
+            $('#quiz-form .quiz-content').append(`
+                <button type="button" class="btn btn-primary" onclick="addQuestion()">
+                    <i class="bi bi-plus fs-3"></i>
+                </button>
+        `)
+        }
     }
 
     setTimeout(function autoShowQuestions() {
@@ -255,7 +284,7 @@ require_once 'header.php';
 
                 return `
                     <input type="radio" class="btn-check" name="${inputName}" id="${inputId}" ${difficulty == question.difficulty ? 'checked' : ''} value="${difficulty}">
-                    <label class="btn btn-sm btn-outline-${color}" for="${inputId}">
+                    <label class="btn btn-sm rounded-2 btn-outline-${color}" for="${inputId}">
                         ${ucfirst(difficulty)}
                     </label>
                 `;
@@ -265,8 +294,7 @@ require_once 'header.php';
             const inputId = `question-${question.id}-difficulty`;
 
             return `
-                <input type="radio" class="btn-check" id="${inputId}" disabled>
-                <label class="btn btn-sm btn-${color}" for="${inputId}">
+                <label class="btn btn-sm rounded-2 btn-${color}">
                     ${ucfirst(question.difficulty)}
                 </label>
             `;
@@ -274,10 +302,7 @@ require_once 'header.php';
     }
 
     function updateQuestions() {
-        const values = $(`#quiz-form`).serializeArray().reduce((acc, item) => {
-            acc[item.name] = item.value;
-            return acc;
-        }, {});
+        const values = getFormData($(`#quiz-form`));
 
         $.post('quiz.php', {
             action: 'update questions',
@@ -329,8 +354,12 @@ require_once 'header.php';
         });
     }
 
-    function reloadQuizList() {
-        $('#quiz-list').load(`course.php?id=${<?= $course_id ?>} #quiz-list-content`);
+    function reloadQuizList(highlight_id = null) {
+        $('#quiz-list').load(`course.php?id=${<?= $course_id ?>} #quiz-list > *`, undefined, () => {
+            if (highlight_id) {
+                showRedDot($(`#quiz-${highlight_id}`));
+            }
+        });
     }
 
     async function addQuiz() {
@@ -353,7 +382,7 @@ require_once 'header.php';
                     showToast('Quiz created', {
                         type: 'success'
                     });
-                    reloadQuizList();
+                    reloadQuizList(data.quiz_id);
                 }
             });
         }
@@ -402,6 +431,51 @@ require_once 'header.php';
                 });
             }
         });
+    }
+
+    function submitQuiz() {
+        const formValues = getFormData($(`#quiz-form`));
+        const answered = Object.keys(formValues).filter(key => key.startsWith('question-'));
+        const totalQuestions = data.questions.length;
+
+        if (answered.length != totalQuestions) {
+            if (!confirm(`You answered ${answered.length} of ${totalQuestions} questions. Are you sure you want to submit?`)) {
+                return;
+            }
+        }
+
+        if (!confirm('Are you sure you want to submit this quiz?')) {
+            return;
+        }
+
+        $('#submit-button').prop('disabled', true);
+
+        let score = 0;
+        const totalScore = totalQuestions;
+
+        const getQuestionElem = question_id => $(`#question-${question_id} .card-subtitle`);
+        const getLabel = (question_id, answer) => $(`label[for="question-${question_id}-answer-${answer}"]`);
+
+        for (const question of data.questions) {
+            const answer = formValues[`question-${question.id}-answer`] ?? '';
+            if (question.correct_answer == answer) {
+                score += 1;
+                getQuestionElem(question.id).append(`<i class="bi bi-check-circle-fill text-success"></i>`);
+            } else {
+                getQuestionElem(question.id).append(`<i class="bi bi-x-circle-fill text-danger"></i>`);
+
+                getLabel(question.id, answer).addClass('text-danger');
+                getLabel(question.id, answer).append(`<i class="bi bi-x-circle-fill"></i>`);
+            }
+            getLabel(question.id, question.correct_answer).addClass('text-success');
+            getLabel(question.id, question.correct_answer).append(`<i class="bi bi-check-circle-fill"></i>`);
+        }
+
+        $(`#quiz-form .quiz-content`).after(`
+            <div id="test-summary" class="text-success">
+                You got ${score} out of ${totalScore} questions correct.
+            </div>
+        `);
     }
 </script>
 

@@ -30,11 +30,9 @@
     function modalSubmit() {
         $('#input-modal').modal('hide');
 
-        const values = $('#input-modal .modal-body').serializeArray();
-
         modalResolve?.({
             success: true,
-            values: Object.fromEntries(values.map(field => [field.name, field.value]))
+            values: getFormData($('#input-modal .modal-body')),
         });
     }
 
@@ -83,6 +81,14 @@
             </span>
         `)
         setTimeout(() => $(`#${id}`).remove(), 5000);
+    }
+
+    function getFormData(form) {
+        const data = {};
+        for (const field of $(form).serializeArray()) {
+            data[field.name] = field.value;
+        }
+        return data;
     }
 </script>
 </body>
