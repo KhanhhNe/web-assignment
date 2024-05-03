@@ -107,7 +107,7 @@ require_once 'header.php';
                                 <span class="text-muted fst-italic">by <?= $quiz['teacher_id'] == $user_id ? 'you' : $quiz['teacher_name'] ?></span>
                                 <?php if ($quiz['teacher_id'] == $user_id) : ?>
                                     <div class="hstack gap-1">
-                                        <button class="btn btn-outline-primary btn-sm tw-aspect-square" type="button" onclick="updateQuestions(<?= $quiz['id'] ?>)">
+                                        <button class="btn btn-outline-primary btn-sm tw-aspect-square" type="button" onclick="updateQuiz(<?= $quiz['id'] ?>, '<?= $quiz['name'] ?>')">
                                             <i class="bi bi-pencil"></i>
                                         </button>
                                         <button class="btn btn-outline-danger btn-sm tw-aspect-square" type="button" onclick="deleteQuiz(<?= $quiz['id'] ?>)">
@@ -329,6 +329,10 @@ require_once 'header.php';
         });
     }
 
+    function reloadQuizList() {
+        $('#quiz-list').load(`course.php?id=${<?= $course_id ?>} #quiz-list-content`);
+    }
+
     async function addQuiz() {
         const {
             success,
@@ -349,10 +353,55 @@ require_once 'header.php';
                     showToast('Quiz created', {
                         type: 'success'
                     });
-                    $('#quiz-list').load(`course.php?id=${<?= $course_id ?>} #quiz-list-content`);
+                    reloadQuizList();
                 }
             });
         }
+    }
+
+    async function updateQuiz(quiz_id, quiz_name) {
+        const {
+            success,
+            values
+        } = await promptModal({
+            quiz_name: {
+                title: 'Quiz name',
+                defaultValue: quiz_name
+            },
+        });
+
+        if (success && values.quiz_name) {
+            $.post('quiz.php', {
+                action: 'update',
+                quiz_id: quiz_id,
+                quiz_name: values.quiz_name
+            }, function(data) {
+                if (data.success) {
+                    showToast('Quiz updated', {
+                        type: 'success'
+                    });
+                    reloadQuizList();
+                }
+            });
+        }
+    }
+
+    function deleteQuiz(quiz_id) {
+        if (!confirm('Are you sure you want to delete this quiz?')) {
+            return;
+        }
+
+        $.post('quiz.php', {
+            action: 'delete',
+            quiz_id: quiz_id
+        }, function(data) {
+            if (data.success) {
+                reloadQuizList();
+                showToast('Quiz deleted', {
+                    type: 'success'
+                });
+            }
+        });
     }
 </script>
 
