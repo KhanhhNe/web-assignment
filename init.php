@@ -3,7 +3,11 @@ session_start();
 error_reporting(E_ALL);
 ini_set('display_errors', 'On');
 
-$db = mysqli_connect('localhost', 'root', 'root', 'assignment');
+if ($_SERVER['SERVER_NAME'] != 'localhost') {
+    $db = mysqli_connect('localhost', 'id22121819_root', 'Root@123', 'id22121819_assigment');
+} else {
+    $db = mysqli_connect('localhost', 'root', 'root', 'assignment');
+}
 if (!$db) {
     die('Could not connect db');
 }
