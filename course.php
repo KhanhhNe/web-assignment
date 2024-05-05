@@ -193,7 +193,7 @@ require_once 'header.php';
                         <div class="card-title">
                             <input type="text" class="form-control print:tw-p-0 print:tw-border-none" name="question-${question.id}-content" value="${question.question}" placeholder="Question" ${disabled}>
                         </div>
-                        <div class="card-text">
+                        <div class="card-text ${question.image_url ? '' : 'print:tw-hidden'}"> 
                             <div class="question-image w-100 tw-h-[10rem]">
                                 <input type="hidden" name="question-${question.id}-image_url" value="${question.image_url}">
                                 ${updatableImage(question.image_url || noImageUrl, `updateQuestionImage(${question.id})`, editable)}
