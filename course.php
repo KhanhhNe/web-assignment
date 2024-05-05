@@ -97,7 +97,7 @@ require_once 'header.php';
 
 <div class="container my-5">
     <div class="row">
-        <div id="quiz-list" class="col-3 vstack gap-2">
+        <div id="quiz-list" class="col-3 print:tw-hidden vstack gap-2">
             <?php foreach ($course as $index => $quiz) : ?>
                 <div id="quiz-<?= $quiz['id'] ?>" class="quiz card mb-3 <?= $quiz_id == $quiz['id'] ? 'tw-ring' : '' ?>">
                     <div class="card-body">
@@ -124,15 +124,18 @@ require_once 'header.php';
                 </button>
             <?php endif ?>
         </div>
-        <div id="quiz-container" class="col-9">
+        <div id="quiz-container" class="col-9 print:tw-w-full">
             <?php if ($quiz_id) : ?>
                 <form id="quiz-form" onsubmit="return false;" class="vstack gap-5">
                     <input type="hidden" name="quiz_id" value="<?= $quiz_id ?>">
 
-                    <div class="quiz-content vstack gap-2"></div>
+                    <div class="quiz-content vstack gap-4"></div>
 
                     <?php if ($quiz['teacher_id'] == $user_id) : ?>
-                        <button type="button" class="btn btn-primary tw-ml-auto" onclick="updateQuestions()">Update</button>
+                        <div class="hstack gap-2 print:tw-hidden">
+                            <button type="button" class="btn btn-primary tw-ml-auto" onclick="window.print()">Print</button>
+                            <button type="button" class="btn btn-primary" onclick="updateQuestions()">Update</button>
+                        </div>
                     <?php elseif (!$user_id) : ?>
                         <button id="submit-button" type="button" class="btn btn-primary tw-ml-auto" onclick="submitQuiz()">Submit</button>
                     <?php endif ?>
@@ -173,17 +176,22 @@ require_once 'header.php';
                     <div class="card-subtitle hstack align-items-center gap-3">
                         <span class="text-muted fst-italic">Question ${index + 1}</span>
                         <div class="hstack gap-1">
-                            ${difficultyButtons(question)}
+                            <div class="print:tw-hidden">
+                                ${difficultyButtons(question)}
+                            </div>
+                            <div class="tw-hidden print:tw-inline">
+                                ${difficultyButtons(question, true)}
+                            </div>
                         </div>
                         ${editable ? `
-                            <button class="btn btn-outline-danger btn-sm tw-aspect-square tw-ml-auto" type="button" onclick="deleteQuestion(${question.id})">
+                            <button class="btn btn-outline-danger btn-sm tw-aspect-square tw-ml-auto print:tw-hidden" type="button" onclick="deleteQuestion(${question.id})">
                                 <i class="bi bi-trash"></i>
                             </button>
                         ` : ''}
                     </div>
                     ${isTeacher ? `
                         <div class="card-title">
-                            <input type="text" class="form-control" name="question-${question.id}-content" value="${question.question}" placeholder="Question" ${disabled}>
+                            <input type="text" class="form-control print:tw-p-0 print:tw-border-none" name="question-${question.id}-content" value="${question.question}" placeholder="Question" ${disabled}>
                         </div>
                         <div class="card-text">
                             <div class="question-image w-100 tw-h-[10rem]">
@@ -195,7 +203,7 @@ require_once 'header.php';
                             ${JSON.parse(question.answers).map((answer, index) => `
                                 <div class="form-check hstack gap-2">
                                     <input class="form-check-input tw-my-auto" type="radio" name="question-${question.id}-correct_answer" value="${index}" ${index == question.correct_answer ? 'checked' : ''} ${disabled}>
-                                    <input type="text" class="form-control" name="question-${question.id}-answer-${index}" value="${answer}" placeholder="Answer ${index + 1}" ${disabled}>
+                                    <input type="text" class="form-control print:tw-p-0 print:tw-border-none" name="question-${question.id}-answer-${index}" value="${answer}" placeholder="Answer ${index + 1}" ${disabled}>
                                 </div>
                             `).join('')}
                         </div>
@@ -233,12 +241,12 @@ require_once 'header.php';
             showQuestion(question, index++);
         }
 
-        if (userId) {
+        if (userId == data.teacherId) {
             $('#quiz-form .quiz-content').append(`
-                <button type="button" class="btn btn-primary" onclick="addQuestion()">
-                    <i class="bi bi-plus fs-3"></i>
-                </button>
-        `)
+                    <button type="button" class="btn btn-primary print:tw-hidden" onclick="addQuestion()">
+                        <i class="bi bi-plus fs-3"></i>
+                    </button>
+            `)
         }
     }
 
@@ -268,7 +276,7 @@ require_once 'header.php';
         }
     }
 
-    function difficultyButtons(question) {
+    function difficultyButtons(question, showOnly = false) {
         const colors = {
             easy: 'success',
             medium: 'warning',
@@ -276,7 +284,7 @@ require_once 'header.php';
         }
         const ucfirst = str => str.charAt(0).toUpperCase() + str.slice(1);
 
-        if (userId == data.teacherId) {
+        if (userId == data.teacherId && !showOnly) {
             return ['easy', 'medium', 'hard'].map(difficulty => {
                 const color = colors[difficulty];
                 const inputName = `question-${question.id}-difficulty`;

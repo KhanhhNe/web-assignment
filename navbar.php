@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-sm bg-bk-dark" data-bs-theme="dark">
+<nav class="navbar navbar-expand-sm bg-bk-dark print:tw-hidden" data-bs-theme="dark">
     <div class="container">
         <a class="navbar-brand" href="/">
             <img src="/assets/logo.png" alt="Logo" width="50" height="50">

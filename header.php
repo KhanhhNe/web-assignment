@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My website</title>
+    <title>Quiz website</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
@@ -14,7 +14,7 @@
 
     <script>
         tailwind.config = {
-            prefix: 'tw-'
+            prefix: 'tw-',
         }
 
         $(document).on('ajaxComplete', function(event, xhr, settings) {
@@ -40,9 +40,9 @@
         function updatableImage(imageUrl, onclick = '', updatable = true) {
             return `
                 <div class="tw-group tw-relative w-100 h-100">
-                    <img src="${imageUrl}" class="w-100 h-100 tw-absolute tw-object-contain ${updatable ? 'tw-transition-all tw-duration-200 tw-ease-in-out group-hover:tw-brightness-50' : ''}">
+                    <img src="${imageUrl}" class="w-100 h-100 tw-absolute tw-object-contain ${updatable ? 'tw-transition-all tw-duration-200 tw-ease-in-out group-hover:tw-brightness-50 group-hover:print:tw-brightness-100' : ''}">
                     ${updatable ? `
-                        <div class="flex-center w-100 h-100 tw-absolute tw-top-0 tw-left-0 tw-opacity-0 tw-z-10 group-hover:tw-opacity-100">
+                        <div class="flex-center w-100 h-100 tw-absolute tw-top-0 tw-left-0 tw-opacity-0 tw-z-10 group-hover:tw-opacity-100 print:tw-hidden">
                             <button onclick="${onclick}" class="btn btn-outline-light">Update</button>
                         </div>
                     ` : ''}
@@ -70,9 +70,9 @@
         ob_start();
     ?>
         <div class="tw-group tw-relative w-100 h-100">
-            <img src="<?= $imageUrl ?>" class="w-100 h-100 tw-absolute tw-object-contain <?= $updatable ? 'tw-transition-all tw-duration-200 tw-ease-in-out group-hover:tw-brightness-50' : '' ?>">
+            <img src="<?= $imageUrl ?>" class="w-100 h-100 tw-absolute tw-object-contain <?= $updatable ? 'tw-transition-all tw-duration-200 tw-ease-in-out group-hover:tw-brightness-50 group-hover:print:tw-brightness-100' : '' ?>">
             <?php if ($updatable) : ?>
-                <div class="flex-center w-100 h-100 tw-absolute tw-top-0 tw-left-0 tw-opacity-0 tw-z-10 group-hover:tw-opacity-100">
+                <div class="flex-center w-100 h-100 tw-absolute tw-top-0 tw-left-0 tw-opacity-0 tw-z-10 group-hover:tw-opacity-100 print:tw-hidden">
                     <button onclick="<?= $onclick ?>" class="btn btn-outline-light">Update</button>
                 </div>
             <?php endif; ?>
