@@ -110,7 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $data[$question_id]['question'] = $value;
                     break;
                 case 'image_url':
-                    $data[$question_id]['image_url'] = $value;
+                    $data[$question_id]['image_url'] = $value != null && $value != 'null' ? $value : '';
                     break;
                 case 'answer':
                     $ind = intval($args[3]);

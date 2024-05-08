@@ -171,7 +171,7 @@ require_once 'header.php';
         const disabled = question.teacher_id != userId ? 'disabled' : '';
 
         $(`#quiz-form .quiz-content`).append(`
-            <div id="question-${question.id}" class="card">
+            <div id="question-${question.id}" class="card tw-break-inside-avoid-page">
                 <div class="card-body vstack gap-3">
                     <div class="card-subtitle hstack align-items-center gap-3">
                         <span class="text-muted fst-italic">Question ${index + 1}</span>
@@ -271,7 +271,7 @@ require_once 'header.php';
 
         if (success && values.image_url) {
             const image = values.image_url;
-            $(`#question-${question_id}-image_url`).val(image);
+            $(`input[name="question-${question_id}-image_url"]`).val(image);
             $(`#question-${question_id} .question-image img`).attr('src', image);
         }
     }

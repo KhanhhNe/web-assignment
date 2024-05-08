@@ -55,9 +55,15 @@ function required_at_least_one_key($keys)
         $values[] = $_REQUEST[$key] ?? NULL;
     }
     // Error if all are null
-    if (count(array_filter($values, 'strlen')) == 0) {
-        $all_keys = implode(', ', $keys);
-        die_json(['success' => false, 'error' => "Require at least one of `$all_keys`"]);
+    $all_null = true;
+    foreach ($values as $value) {
+        if ($value !== NULL) {
+            $all_null = false;
+            break;
+        }
+    }
+    if ($all_null) {
+        die_json(['success' => false, 'error' => "Require at least one of `$keys`"]);
     }
     return $values;
 }
