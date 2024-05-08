@@ -137,7 +137,10 @@ require_once 'header.php';
                             <button type="button" class="btn btn-primary" onclick="updateQuestions()">Update</button>
                         </div>
                     <?php elseif (!$user_id) : ?>
-                        <button id="submit-button" type="button" class="btn btn-primary tw-ml-auto" onclick="submitQuiz()">Submit</button>
+                        <div class="hstack justify-content-end gap-1">
+                            <button id="print-button" type="button" class="btn btn-primary tw-hidden" onclick="window.print()">Print</button>
+                            <button id="submit-button" type="button" class="btn btn-primary" onclick="submitQuiz()">Submit</button>
+                        </div>
                     <?php endif ?>
                 </form>
             <?php endif ?>
@@ -484,6 +487,8 @@ require_once 'header.php';
                 You got ${score} out of ${totalScore} questions correct.
             </div>
         `);
+
+        $('#print-button').removeClass('tw-hidden');
     }
 </script>
 
